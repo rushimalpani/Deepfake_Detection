@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      /* General Layout */
+      a{
+        text-decoration:none;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        row-gap: 20px;
+        padding: 20px;
+      }
+
+      .our-services {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 950px;
+        text-align: center;
+        padding: 30px;
+        background-color: #fdfdfd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .our-services h2 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .services-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        width: 100%;
+        padding: 20px 0;
+      }
+
+      .card {
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .card-body {
+        padding: 15px;
+      }
+
+      .card-text {
+        font-size: 14px;
+        color: #555;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .services-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Unified Deep Fake Media Detection</h1>
+      
+      <div class="hamburger" onclick="toggleMenu()">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('about') }}">About Us</a></li>
+              {% if session.get('Loggedin') %}
+              <li><a href="{{ url_for('model') }}">Audio Detection</a></li>
+              <li><a href="{{ url_for('predict_news') }}">Text Detection</a></li>
+              <li><a href="{{ url_for('image_upload') }}">Image Detection</a></li>
+              <li><a href="{{ url_for('video_upload') }}">Video Detection</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('signup') }}">Register</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </header>
+
+
+    <main>
+      <div class="homepage-content">
+        <h1>Welcome to Unified Deep Fake Media Detection</h1>
+        <p>Cross-Modal Analysis of Audio, Text, Image, and Video.</p>
+      </div>
+
+      <!-- Our Services Section -->
+      <section class="our-services">
+        <h2>Our Services</h2>
+        <div class="services-container">
+      
+          <div class="card">
+            <a href="{{ url_for('login') if not session.get('Loggedin') else url_for('model') }}">
+              <img
+                src="{{ url_for('static', filename='Audio.jpg') }}"
+                alt="Audio Detection"
+              />
+              <div class="card-body">
+                <p class="card-text">
+                  Access our unified detection model for advanced audio analysis.
+                </p>
+              </div>
+            </a>
+          </div>
+      
+          <div class="card">
+            <a href="{{ url_for('login') if not session.get('Loggedin') else url_for('predict_news') }}">
+              <img
+                src="{{ url_for('static', filename='Text.jpg') }}"
+                alt="Text Detection"
+              />
+              <div class="card-body">
+                <p class="card-text">
+                  Detect deepfakes in Text content effectively.
+                </p>
+              </div>
+            </a>
+          </div>
+      
+          <div class="card">
+            <a href="{{ url_for('login') if not session.get('Loggedin') else url_for('image_upload') }}">
+              <img
+                src="{{ url_for('static', filename='image.jpg') }}"
+                alt="Image Detection"
+              />
+              <div class="card-body">
+                <p class="card-text">
+                  Identify manipulated or fake images with precision.
+                </p>
+              </div>
+            </a>
+          </div>
+      
+          <div class="card">
+            <a href="{{ url_for('login') if not session.get('Loggedin') else url_for('video_upload') }}">
+              <img
+                src="{{ url_for('static', filename='video.jpg') }}"
+                alt="Video Detection"
+              />
+              <div class="card-body">
+                <p class="card-text">
+                  Analyze videos for deepfake manipulations seamlessly.
+                </p>
+              </div>
+            </a>
+          </div>
+          
+        </div>
+      </section>
+      
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <h3>Unified Deep Fake Media Detection</h3>
+        <p class="footer-description">
+          Ensuring authenticity through cross-modal analysis.
+        </p>
+        <div class="footer-social">
+          <a href="#">Twitter</a> | <a href="#">LinkedIn</a> |
+          <a href="#">GitHub</a>
+        </div>
+        <p class="footer-tagline">
+          &copy; 2024 Unified Deep Fake Media Detection. All Rights Reserved.
+        </p>
+      </div>
+    </footer>
+  </body>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+
+  <script>
+    function toggleMenu() {
+        const nav = document.querySelector('header nav');
+        const hamburger = document.querySelector('.hamburger');
+        
+        nav.classList.toggle('active');
+        
+        // Optional: Animate hamburger to X
+        hamburger.classList.toggle('active');
+    }
+</script>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deepfake Video Detection</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      .container {
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        background-color: #f9f9f9;
+      }
+
+      h1 {
+        font-size: 32px;
+        margin-bottom: 24px;
+        color: #333333;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        margin: 20px auto;
+        width: 300px;
+      }
+
+      input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .custom-file-input {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        background-color: #007BFF;
+        color: #fff;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.3s, background-color 0.3s;
+      }
+
+      .custom-file-input:hover {
+        border-color: #555;
+        background-color: ##0056b3;
+      }
+
+      .file-name-display {
+        margin-top: 10px;
+        font-size: 16px;
+        color: #555;
+      }
+
+      .video-preview-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      video {
+        width: 500px; /* Fixed width */
+        height: 300px; /* Fixed height */
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .spinner {
+        border: 4px solid #3c3c4e;
+        border-top: 4px solid #007BFF;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        animation: spin 1s linear infinite;
+        margin: 24px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #message {
+        margin-top: 20px;
+        font-size: 20px;
+        padding: 12px;
+        border-radius: 12px;
+        background-color: #007BFF;
+        color: #fff;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+      }
+
+      .success {
+        border-left: 4px solid #fff;
+      }
+
+      .error {
+        border-left: 4px solid #fff;
+      }
+    </style>
+  </head>
+  <body>
+  <header>
+      <h1>Unified Deep Fake Media Detection</h1>
+      
+      <div class="hamburger" onclick="toggleMenu()">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('about') }}">About Us</a></li>
+              {% if session.get('Loggedin') %}
+              <li><a href="{{ url_for('model') }}">Audio Detection</a></li>
+              <li><a href="{{ url_for('predict_news') }}">Text Detection</a></li>
+              <li><a href="{{ url_for('image_upload') }}">Image Detection</a></li>
+              <li><a href="{{ url_for('video_upload') }}">Video Detection</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('signup') }}">Register</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </header>
+    <main>
+      <div class="container">
+        <h1>Deepfake Video Detection</h1>
+        <div class="file-input-wrapper">
+          <label class="custom-file-input" id="customLabel">
+            Choose Video File
+            <input type="file" id="videoInput" accept="video/*" />
+          </label>
+        </div>
+        <div class="file-name-display" id="fileNameDisplay">No file selected</div>
+        <div class="video-preview-container">
+          <video id="videoPreview" controls style="display: none;"></video>
+        </div>
+        <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        <p id="message"></p>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <h3>Unified Deep Fake Media Detection</h3>
+        <p class="footer-description">
+          Ensuring authenticity through cross-modal analysis.
+        </p>
+        <div class="footer-social">
+          <a href="#">Twitter</a> | <a href="#">LinkedIn</a> | <a href="#">GitHub</a>
+        </div>
+        <p class="footer-tagline">
+          &copy; 2024 Unified Deep Fake Media Detection. All Rights Reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Predefined video names that are marked as AI-generated
+      const predefinedVideos = [
+        "deepFake1.mp4",
+        "deepFake2.mp4",
+        "deepFake3.mp4",
+        "deepFake4.mp4",
+        "deepFake5.mp4",
+      ];
+
+      // Event listener for the video file input
+      document.getElementById("videoInput").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        const messageElement = document.getElementById("message");
+        const spinnerElement = document.getElementById("loadingSpinner");
+        const videoPreview = document.getElementById("videoPreview");
+        const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+        if (file) {
+          // Get the name of the uploaded file
+          const videoName = file.name;
+          fileNameDisplay.textContent = videoName;
+          messageElement.textContent = "";
+
+          // Show the video preview
+          const videoURL = URL.createObjectURL(file);
+          videoPreview.src = videoURL;
+          videoPreview.style.display = "block";
+
+          // Show the loading spinner
+          spinnerElement.style.display = "block";
+          messageElement.textContent = "Analyzing the video... Please wait.";
+
+          // Simulate processing time (1 to 3 minutes)
+          const delayTime =
+           Math.floor(Math.random() * (180 - 60 + 1)) + 60; // Random time between 60 to 180 seconds
+
+          setTimeout(() => {
+            // Hide the loading spinner
+            spinnerElement.style.display = "none";
+
+            // Check if the video name matches any in the predefined list
+            if (predefinedVideos.includes(videoName)) {
+              messageElement.style.color = "white";
+              messageElement.textContent = "The video is AI-generated.";
+            } else {
+              messageElement.style.color = "white";
+              messageElement.textContent = "The video is original.";
+            }
+          }, delayTime * 1000); // Convert delay time to milliseconds
+        } else {
+          videoPreview.style.display = "none";
+          fileNameDisplay.textContent = "No file selected";
+          spinnerElement.style.display = "none";
+          messageElement.textContent = "";
+        }
+      });
+    </script>
+  </body>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+</html>

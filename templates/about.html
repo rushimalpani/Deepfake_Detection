@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+
+    <style>
+      .section-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        justify-content: center;
+    }
+    
+    .card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 300px;
+        flex: 1 1 calc(33.333% - 20px); /* Responsive cards */
+        box-sizing: border-box;
+    }
+    
+    .card h2 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    
+    .card p,
+    .card ul {
+        font-size: 1em;
+        line-height: 1.5;
+        color: #555;
+    }
+    
+    .card ul {
+        padding-left: 20px;
+    }
+    
+    .card li {
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 calc(50% - 20px);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .card {
+            flex: 1 1 100%;
+        }
+    }
+    
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Unified Deep Fake Media Detection</h1>
+      
+      <div class="hamburger" onclick="toggleMenu()">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('about') }}">About Us</a></li>
+              {% if session.get('Loggedin') %}
+              <li><a href="{{ url_for('model') }}">Audio Detection</a></li>
+              <li><a href="{{ url_for('predict_news') }}">Text Detection</a></li>
+              <li><a href="{{ url_for('image_upload') }}">Image Detection</a></li>
+              <li><a href="{{ url_for('video_upload') }}">Video Detection</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('signup') }}">Register</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </header>
+
+
+<main>
+  <section>
+    <div class="section-wrapper">
+        <!-- Welcome Card -->
+        <div class="card">
+            <h2>Welcome to Deepfake Detector</h2>
+            <p>
+                Our platform leverages cutting-edge Artificial Intelligence to detect and identify deepfake content in audio, video, and text. 
+                With the rise of misinformation and manipulated media, our mission is to provide reliable tools to combat the spread of fake content.
+            </p>
+        </div>
+
+        <!-- Mission Card -->
+        <div class="card">
+            <h2>Our Mission</h2>
+            <p>
+                To create a safer digital environment by empowering individuals, organizations, and governments with innovative deepfake detection tools. 
+                We aim to promote media transparency and reduce the harmful impact of manipulated content.
+            </p>
+        </div>
+
+        <!-- Features Card -->
+        <div class="card">
+            <h2>Features</h2>
+            <ul>
+                <li>Accurate detection of manipulated videos using advanced AI models.</li>
+                <li>Identification of audio deepfakes through voice pattern analysis.</li>
+                <li>Recognition of text-based manipulations using natural language processing.</li>
+                <li>User-friendly interface for seamless media analysis.</li>
+                <li>Detailed reports on media authenticity.</li>
+            </ul>
+        </div>
+
+        <!-- How It Works Card -->
+        <div class="card">
+            <h2>How It Works</h2>
+            <p>
+                1. <strong>Upload Media:</strong> Submit your video, audio, or text for analysis.<br>
+                2. <strong>AI Detection:</strong> Our system evaluates the content using advanced machine learning algorithms.<br>
+                3. <strong>Results:</strong> Receive a detailed authenticity report with confidence scores.
+            </p>
+        </div>
+
+        <!-- Why Choose Us Card -->
+        <div class="card">
+            <h2>Why Choose Us?</h2>
+            <ul>
+                <li><strong>Accuracy:</strong> State-of-the-art AI models for high precision in detection.</li>
+                <li><strong>Speed:</strong> Rapid analysis and results for efficient verification.</li>
+                <li><strong>User-Friendly:</strong> Simple and intuitive design for all users.</li>
+                <li><strong>Ethics:</strong> Focused on privacy and responsible AI practices.</li>
+            </ul>
+        </div>
+
+        <!-- Privacy Matters Card -->
+        <div class="card">
+            <h2>Privacy Matters</h2>
+            <p>
+                We respect your privacy. All uploaded content is processed securely and deleted after analysis. 
+                We are committed to ethical AI usage and protecting your data.
+            </p>
+        </div>
+    </div>
+</section>
+
+</main>
+
+    <footer>
+      <div class="footer-container">
+        <h3>Unified Deep Fake Media Detection</h3>
+        <p class="footer-description">
+          Ensuring authenticity through cross-modal analysis.
+        </p>
+        <div class="footer-social">
+          <a href="#">Twitter</a> | <a href="#">LinkedIn</a> |
+          <a href="#">GitHub</a>
+         <p class="footer-tagline">
+          &copy; 2024 Unified Deep Fake Media Detection. All Rights Reserved.
+        </p>
+    </footer>
+  </body>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unified Audio Deepfake Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    .container {
+      margin: auto;
+      width: 50%;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.4);
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    label {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    label:hover {
+      background-color: #0056a3;
+    }
+
+    input[type="submit"] {
+      padding: 10px 20px;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056a3;
+    }
+    /* Loader Styling */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px; /* Default size */
+}
+
+.loader img {
+  width: 50px; /* Default loader image size */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Responsive Loader */
+@media (max-width: 768px) {
+  .loader img {
+    width: 40px; /* Adjust for tablets */
+  }
+
+  .loader {
+    height: 80px; /* Smaller height for compact view */
+  }
+}
+
+@media (max-width: 480px) {
+  .loader img {
+    width: 30px; /* Smaller size for mobile */
+  }
+
+  .loader {
+    height: 60px; /* Smaller height for compact view */
+  }
+}
+
+   
+
+  </style>
+</head>
+<body>
+  <header>
+      <h1>Unified Deep Fake Media Detection</h1>
+      
+      <div class="hamburger" onclick="toggleMenu()">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('about') }}">About Us</a></li>
+              {% if session.get('Loggedin') %}
+              <li><a href="{{ url_for('model') }}">Audio Detection</a></li>
+              <li><a href="{{ url_for('predict_news') }}">Text Detection</a></li>
+              <li><a href="{{ url_for('image_upload') }}">Image Detection</a></li>
+              <li><a href="{{ url_for('video_upload') }}">Video Detection</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('signup') }}">Register</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </header>
+
+  <div class="container">
+    <h2>Upload an audio file:</h2>
+    <form id="upload_form" action="/model.html" method="POST" enctype="multipart/form-data">
+      <label for="audio_file">Choose File</label>
+      <input type="file" name="audio_file" id="audio_file" required>
+      <br><br>
+      <div id="loader" class="loader" style="display: none;">
+        <img src="/static/loader.gif" alt="Loading...">
+      </div>
+      <input type="submit" id="submit_btn" value="Submit">
+    </form>
+
+    <div class="audio-player">
+      <audio controls id="audio_player">
+        <source id="audio_source" src="#" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+
+    {% if file_label %}
+      <div class="result">
+        <p class="file-label">{{ file_label }}</p>
+        {% if result_label %}
+          {% set result_parts = result_label.split(':') %}
+          <p>
+            <span class="black-text">{{ result_parts[0] }}:</span>
+            {% if "Fake" in result_parts[1] %}
+              <span class="fake-result">{{ result_parts[1] }}</span>
+            {% else %}
+              <span class="real-result">{{ result_parts[1] }}</span>
+            {% endif %}
+            {% if result_parts[2] %}
+              :<span class="fake-result">{{ result_parts[2] }}</span>
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <h3>Unified Deep Fake Media Detection</h3>
+      <p class="footer-description">
+        Ensuring authenticity through cross-modal analysis.
+      </p>
+      <div class="footer-social">
+        <a href="#">Twitter</a> | <a href="#">LinkedIn</a> | <a href="#">GitHub</a>
+      </div>
+      <p class="footer-tagline">
+        &copy; 2024 Unified Deep Fake Media Detection. All Rights Reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    const audioFileInput = document.getElementById('audio_file');
+    const audioPlayer = document.getElementById('audio_player');
+    const audioSource = document.getElementById('audio_source');
+    const uploadForm = document.getElementById('upload_form');
+    const submitBtn = document.getElementById('submit_btn');
+    const loader = document.getElementById('loader');
+
+    audioFileInput.addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const fileURL = URL.createObjectURL(file);
+        audioSource.src = fileURL;
+        audioPlayer.load();
+      }
+    });
+
+    uploadForm.addEventListener('submit', function (event) {
+      loader.style.display = 'block';
+      submitBtn.disabled = true;
+    });
+  </script>
+</body>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+</html>

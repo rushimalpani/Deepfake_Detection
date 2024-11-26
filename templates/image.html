@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deepfake Image Detection</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+
+    <style>
+      .file-label{
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        file-lable:hover {
+            background-color: #0056b3;
+        }
+      
+      </style>
+  </head>
+
+  <body>
+  <header>
+      <h1>Unified Deep Fake Media Detection</h1>
+      
+      <div class="hamburger" onclick="toggleMenu()">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('about') }}">About Us</a></li>
+              {% if session.get('Loggedin') %}
+              <li><a href="{{ url_for('model') }}">Audio Detection</a></li>
+              <li><a href="{{ url_for('predict_news') }}">Text Detection</a></li>
+              <li><a href="{{ url_for('image_upload') }}">Image Detection</a></li>
+              <li><a href="{{ url_for('video_upload') }}">Video Detection</a></li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('signup') }}">Register</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </header>
+    <main>
+      <div class="container">
+        <h1>Deepfake Image Detection</h1>
+        <form action="{{ url_for('image_upload') }}" method="post" enctype="multipart/form-data">
+          <label class="file-label" for="file" >Choose Image</label><br>
+          <input type="file" name="file" id="file" accept=".jpg, .jpeg, .png" required onchange="showFileName(event)"/>
+          <p class="file-name" id="file-name">No file selected</p><br>
+          <button type="submit">Submit</button> <br>
+        </form>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if result %}
+        <h2>Classification Result:</h2><br>
+        <p>{{ result }}</p>
+        {% if result == "The uploaded image is a deepfake." %}
+        <h2>Result Images:</h2><br>
+        <a href="{{ url_for('download_pdf') }}">
+          <button>Download PDF</button>
+        </a>
+        {% endif %}
+        {% endif %}
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <h3>Unified Deep Fake Media Detection</h3>
+        <p class="footer-description">
+          Ensuring authenticity through cross-modal analysis.
+        </p>
+        <div class="footer-social">
+          <a href="#">Twitter</a> | <a href="#">LinkedIn</a> | <a href="#">GitHub</a>
+        </div>
+        <p class="footer-tagline">
+          &copy; 2024 Unified Deep Fake Media Detection. All Rights Reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      function showFileName(event) {
+        const input = event.target;
+        const fileName = input.files[0]?.name || "No file selected";
+        document.getElementById("file-name").textContent = fileName;
+      }
+    </script>
+  </body>
+<script>
+  function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      const hamburger = document.querySelector('.hamburger');
+      
+      nav.classList.toggle('active');
+      
+      // Optional: Animate hamburger to X
+      hamburger.classList.toggle('active');
+  }
+</script>
+</html>
